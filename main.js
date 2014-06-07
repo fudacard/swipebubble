@@ -2,6 +2,8 @@
 enchant();
 var game;
 
+var maxSize = 0;
+
 window.onload = function() {
 
     game = new Game(320, 320);
@@ -47,6 +49,19 @@ var GameScene = Class.create(Scene, {
         
         this.lastPoint = {};
         this.moving = false;
+        
+        this.liquid = 100;
+        this.liquidBar = new Sprite(320, 20);
+        this.liquidBar.y = 300;
+        var su = new Surface(320, 20);
+        su.context.fillStyle = 'SkyBlue';
+        su.context.fillRect(0, 0, 320, 20);
+        this.liquidBar.image = su;
+        this.addChild(this.liquidBar);
+        
+        this.labelMax = new Label('0cm');
+//        this.labelMax.font = '32px';
+        this.addChild(this.labelMax);
     },
     ontouchstart: function(e) {
         this.beginX = e.x;
@@ -114,7 +129,17 @@ var GameScene = Class.create(Scene, {
             sp.tl.moveBy(-30 + 60 * Math.random(), -80 + 50 * Math.random(), 30 + Math.floor(Math.random() * 10))
                  .moveBy(-30 + 60 * Math.random(), -80 + 50 * Math.random(), 30 + Math.floor(Math.random() * 10))
                  .removeFromScene();
-            console.log("add");
+            this.liquid -= Math.floor(this.power / 2);
+            if (this.liquid < 0) {
+                this.liquid = 0;
+            }
+//            if (this.liquid >= 0) {
+                this.liquidBar.width = 320 * this.liquid / 100;
+//            }
+            if (this.power / 2 > maxSize) {
+                maxSize = this.power / 2;
+            }
+            this.labelMax.text = (Math.floor(maxSize * 100) / 100) + 'cm';
             this.power = 0;
         } else {
             this.surfaceBubble.context.clearRect(0, 0, 320, 320);
@@ -124,7 +149,6 @@ var GameScene = Class.create(Scene, {
             this.surfaceBubble.context.fill();
             this.surfaceBubble.context.stroke();
         }
-        console.log(speed);
         
         this.xs[this.count] = e.x;
         this.ys[this.count] = e.y;
