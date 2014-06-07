@@ -36,6 +36,14 @@ var GameScene = Class.create(Scene, {
         this.spriteBubble.image = this.surfaceBubble;
         this.addChild(this.spriteBubble);
         
+        this.sprites = new Array();
+        this.surfaces = new Array();
+        this.sindex = 0;
+        this.smax = 30;
+        for (var i = 0; i < this.smax; i++) {
+            this.sprites[i] = new Sprite(320, 320);
+            this.surfaces[i] = new Surface(320, 320);
+        }
     },
     ontouchstart: function(e) {
         this.beginX = e.x;
@@ -71,8 +79,12 @@ var GameScene = Class.create(Scene, {
             if (r < 100) {
                 r += 100 + Math.floor(Math.random() * 100);
             }
-            var sp = new Sprite(320, 320);
-            var su = new Surface(320, 320);
+            var sp = this.sprites[this.sindex];
+            var su = this.surfaces[this.sindex];
+            this.sindex = (this.sindex + 1) % this.smax;
+            sp.x = 0;
+            sp.y = 0;
+            su.context.clearRect(0, 0, 320, 320);
             su.context.strokeStyle = '#000';
             su.context.beginPath();
             su.context.arc(su.width / 2, su.height / 2, this.power, 0, Math.PI * 2);
