@@ -44,6 +44,9 @@ var GameScene = Class.create(Scene, {
             this.sprites[i] = new Sprite(320, 320);
             this.surfaces[i] = new Surface(320, 320);
         }
+        
+        this.lastPoint = {};
+        this.moving = false;
     },
     ontouchstart: function(e) {
         this.beginX = e.x;
@@ -64,6 +67,20 @@ var GameScene = Class.create(Scene, {
         this.surfaceBubble.context.clearRect(0, 0, 320, 320);
     },
     ontouchmove: function(e) {
+        this.lastPoint.x = e.x;
+        this.lastPoint.y = e.y;
+        this.moving = true;
+    },
+    ontouchend: function() {
+        this.surfaceCanvas.context.clearRect(0, 0, 320, 320);
+        this.surfaceBubble.context.clearRect(0, 0, 320, 320);
+    },
+    onenterframe: function() {
+        if (!this.moving) {
+            return;
+        }
+        this.moving = false;
+        var e = this.lastPoint;
         this.surfaceCanvas.context.beginPath();
         this.surfaceCanvas.context.moveTo(this.beginX, this.beginY);
         this.surfaceCanvas.context.lineTo(e.x, e.y);
@@ -113,9 +130,5 @@ var GameScene = Class.create(Scene, {
         this.ys[this.count] = e.y;
         this.ts[this.count] = time;
         this.count++;
-    },
-    ontouchend: function() {
-        this.surfaceCanvas.context.clearRect(0, 0, 320, 320);
-        this.surfaceBubble.context.clearRect(0, 0, 320, 320);
     }
 });
