@@ -7,7 +7,7 @@ var maxSize = 0;
 window.onload = function() {
 
     game = new Game(320, 320);
-    game.preload("aozora.jpg");
+    game.preload("aozora.jpg", 'icon0.png');
     game.onload = function() {
         // ここに処理を書いていきます。
         var label = new Label("enchant.jsの世界へようこそ！");
@@ -25,6 +25,13 @@ var GameScene = Class.create(Scene, {
         var background = new Sprite(320, 320);
         background.image = game.assets["aozora.jpg"];
         this.addChild(background);
+        
+        var bottle = new Sprite(16, 16);
+        bottle.x = 5;
+        bottle.y = 320 - bottle.height - 5;
+        bottle.image = game.assets['icon0.png'];
+        bottle.frame = 12;
+        this.addChild(bottle);
         
         this.surfaceCanvas = new Surface(320, 320);
         this.surfaceCanvas.context.strokeStyle = '#000';
@@ -51,7 +58,8 @@ var GameScene = Class.create(Scene, {
         this.moving = false;
         
         this.liquid = 100;
-        this.liquidBar = new Sprite(320, 20);
+        this.liquidBar = new Sprite(300, 20);
+        this.liquidBar.x = 20;
         this.liquidBar.y = 300;
         var su = new Surface(320, 20);
         su.context.fillStyle = 'SkyBlue';
@@ -62,6 +70,7 @@ var GameScene = Class.create(Scene, {
         this.labelMax = new Label('0cm');
 //        this.labelMax.font = '32px';
         this.addChild(this.labelMax);
+        this.lastTouch = this.age;
     },
     ontouchstart: function(e) {
         this.beginX = e.x;
@@ -85,12 +94,17 @@ var GameScene = Class.create(Scene, {
         this.lastPoint.x = e.x;
         this.lastPoint.y = e.y;
         this.moving = true;
+        this.lastTouch = this.age;
     },
     ontouchend: function() {
         this.surfaceCanvas.context.clearRect(0, 0, 320, 320);
         this.surfaceBubble.context.clearRect(0, 0, 320, 320);
     },
     onenterframe: function() {
+        if (this.age - this.lastTouch >= game.fps * 3) {
+            this.surfaceCanvas.context.clearRect(0, 0, 320, 320);
+            this.surfaceBubble.context.clearRect(0, 0, 320, 320);
+        }
         if (!this.moving) {
             return;
         }
